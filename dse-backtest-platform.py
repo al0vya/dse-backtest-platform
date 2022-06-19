@@ -444,7 +444,7 @@ def scrape_stock_data(
         rows = table_body.find_all('tr')
         
         with open(stock + ".txt", 'w') as fp:
-            fp.write('# DATE TRADECODE LAST_TRADE_PRICE HIGH LOW OPEN CLOSE YDAY_CLOSE NUM_TRADES VALUE_IN_MN NUM_SHARES\n')
+            fp.write('DATE TRADECODE LAST_TRADE_PRICE HIGH LOW OPEN CLOSE YDAY_CLOSE NUM_TRADES VALUE_IN_MN NUM_SHARES\n')
             
             for row in rows:
                 cols = row.find_all('td')
