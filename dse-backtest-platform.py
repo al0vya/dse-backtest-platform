@@ -491,25 +491,45 @@ def scrape_all_stock_data(
             print('Failed to scrape data of stock %s' % stock)
             continue
 
-def plot_stock_close_prices(
-    stock
+def plot_stock_data(
+    stock,
+    name
 ):
-    stock_data = pd.read_csv(filepath_or_buffer=(stock + '.txt'), delimiter=' ')
+    stock_data = pd.read_csv(
+        filepath_or_buffer=(stock + '.txt'),
+        delimiter=' ',
+        index_col=False
+    )
     
     # flip dataframe horizontally to dates
     stock_data = stock_data[::-1]  
     
     fig, ax = plt.subplots()
     
-    print(stock_data)
-    
     ax.plot(
-        stock_data['#'],
-        stock_data['CLOSE']
+        stock_data[name].values
     )
     
-    ax.set_ylabel('BDT')
+    is_price_data = (
+           name == 'LAST_TRADE_PRICE'
+        or name == 'HIGH' 
+        or name == 'LOW'
+        or name == 'OPEN'
+        or name == 'CLOSE'
+        or name == 'YDAY_CLOSE'
+    )
+    
+    if   is_price_data:
+        ylabel = 'BDT'
+    elif name == 'NUM_TRADES':
+        ylabel = 'Number of trades'
+    elif name == 'VALUE_IN_MN':
+        ylabel = 'BDT (mn)'
+    elif name == 'NUM_SHARES':
+        ylabel = 'Number of shares'
+    
     ax.set_xlabel('Days')
+    ax.set_ylabel(ylabel)
     
     plt.show()
 
@@ -517,7 +537,7 @@ def main():
     #test_list_of_stocks( start_driver() )
     #scrape_all_stock_data( start_driver() )
     
-    plot_stock_close_prices('LHBL')
+    plot_stock_data(stock='LHBL', name='NUM_TRADES')
     
 if __name__ == '__main__':
     main()
