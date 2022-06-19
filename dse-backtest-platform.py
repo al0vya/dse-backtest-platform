@@ -505,7 +505,7 @@ def plot_stock_close_prices(
     
     ax.plot(
         stock_data['#'],
-        int(stock_data['VALUE_IN_MN'])
+        stock_data['CLOSE']
     )
     
     ax.set_ylabel('BDT')
@@ -515,9 +515,9 @@ def plot_stock_close_prices(
 
 def main():
     #test_list_of_stocks( start_driver() )
-    scrape_all_stock_data( start_driver() )
+    #scrape_all_stock_data( start_driver() )
     
-    #plot_stock_close_prices('LHBL')
+    plot_stock_close_prices('LHBL')
     
 if __name__ == '__main__':
     main()
