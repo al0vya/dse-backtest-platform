@@ -449,7 +449,10 @@ def scrape_stock_data(
             for row in rows:
                 cols = row.find_all('td')
                 cols = [col.text.strip() for col in cols][1:]
-                [fp.write(col + " ") for col in cols]
+                
+                for col in cols:
+                    fp.write(col.replace(',', '') + " ")
+                
                 fp.write('\n')
 
 def start_driver():
@@ -493,16 +496,16 @@ def plot_stock_close_prices(
 ):
     stock_data = pd.read_csv(filepath_or_buffer=(stock + '.txt'), delimiter=' ')
     
-    # flip dataframe horizontally to fix dates
+    # flip dataframe horizontally to dates
     stock_data = stock_data[::-1]  
-    
-    print(stock_data)   
     
     fig, ax = plt.subplots()
     
+    print(stock_data)
+    
     ax.plot(
         stock_data['#'],
-        stock_data['CLOSE']
+        int(stock_data['VALUE_IN_MN'])
     )
     
     ax.set_ylabel('BDT')
