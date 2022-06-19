@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from bs4                             import BeautifulSoup
 from selenium                        import webdriver
@@ -447,7 +448,7 @@ def scrape_stock_data(
             
             for row in rows:
                 cols = row.find_all('td')
-                cols = [col.text.strip() for col in cols]
+                cols = [col.text.strip() for col in cols][1:]
                 [fp.write(col + " ") for col in cols]
                 fp.write('\n')
 
@@ -487,11 +488,33 @@ def scrape_all_stock_data(
             print('Failed to scrape data of stock %s' % stock)
             continue
 
-def main():
-    driver = start_driver()
+def plot_stock_close_prices(
+    stock
+):
+    stock_data = pd.read_csv(filepath_or_buffer=(stock + '.txt'), delimiter=' ')
     
-    #test_list_of_stocks(driver)
-    scrape_all_stock_data(driver)
-                
+    # flip dataframe horizontally to fix dates
+    stock_data = stock_data[::-1]  
+    
+    print(stock_data)   
+    
+    fig, ax = plt.subplots()
+    
+    ax.plot(
+        stock_data['#'],
+        stock_data['CLOSE']
+    )
+    
+    ax.set_ylabel('BDT')
+    ax.set_xlabel('Days')
+    
+    plt.show()
+
+def main():
+    #test_list_of_stocks( start_driver() )
+    scrape_all_stock_data( start_driver() )
+    
+    #plot_stock_close_prices('LHBL')
+    
 if __name__ == '__main__':
     main()
