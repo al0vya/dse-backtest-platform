@@ -459,7 +459,10 @@ def start_driver():
     options = Options()
     options.add_argument('start-maximized')
     
-    driver = webdriver.Edge(service=Service(EdgeChromiumDriverManager().install()), options=options)
+    driver = webdriver.Edge(
+        service=Service( EdgeChromiumDriverManager().install() ),
+        options=options
+    )
     
     return driver
 
@@ -491,18 +494,57 @@ def scrape_all_stock_data(
             print('Failed to scrape data of stock %s' % stock)
             continue
 
+def read_stock_data(
+    stock
+):
+    # flip dataframe horizontally to dates
+    return pd.read_csv(
+        filepath_or_buffer=(stock + '.txt'),
+        delimiter=' ',
+        index_col=False
+    )[::-1]
+    
+def plot_relative_volume(
+    stock
+):
+    stock_data = read_stock_data(stock)
+    
+    fig = plt.figure()
+    
+    gridspec = fig.add_gridspec(nrows=3, ncols=1)
+    
+    axs = gridspec.subplots()
+    
+    axs[0].plot(
+        stock_data['CLOSE'].values[30:]
+    )
+    
+    axs[0].set_xlabel('Days')
+    axs[0].set_ylabel('BDT')
+    
+    axs[1].plot(
+        stock_data['VALUE_IN_MN'].values[30:]
+    )
+    
+    axs[1].set_xlabel('Days')
+    axs[1].set_ylabel('Volume (BDT mn)')
+    
+    axs[2].plot(
+        ( stock_data['VALUE_IN_MN'].values[1:] / stock_data['VALUE_IN_MN'].values[:-1] )[30:]
+    )
+    
+    axs[2].plot([0, 450], [2.5, 2.5], linewidth=0.5, color='k')
+    
+    axs[2].set_xlabel('Days')
+    axs[2].set_ylabel('Relative volume')
+    
+    plt.show()
+    
 def plot_stock_data(
     stock,
     name
 ):
-    stock_data = pd.read_csv(
-        filepath_or_buffer=(stock + '.txt'),
-        delimiter=' ',
-        index_col=False
-    )
-    
-    # flip dataframe horizontally to dates
-    stock_data = stock_data[::-1]  
+    stock_data = read_stock_data(stock)
     
     fig, ax = plt.subplots()
     
@@ -532,12 +574,14 @@ def plot_stock_data(
     ax.set_ylabel(ylabel)
     
     plt.show()
-
+    
 def main():
     #test_list_of_stocks( start_driver() )
     #scrape_all_stock_data( start_driver() )
     
-    plot_stock_data(stock='LHBL', name='NUM_TRADES')
+    #plot_stock_data(stock='LHBL', name='NUM_TRADES')
+    
+    plot_relative_volume('ISLAMICFIN')
     
 if __name__ == '__main__':
     main()
