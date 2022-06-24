@@ -1,3 +1,5 @@
+import sys
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -477,6 +479,8 @@ def test_list_of_stocks(
                 stock=stock,
                 testing=True
             )
+        except KeyboardInterrupt:
+            sys.exit()
         except:
             print('Testing failed at stock %s' % stock)
             continue
@@ -490,6 +494,8 @@ def scrape_all_stock_data(
                 driver=driver,
                 stock=stock
             )
+        except KeyboardInterrupt:
+            sys.exit()
         except:
             print('Failed to scrape data of stock %s' % stock)
             continue
@@ -497,6 +503,8 @@ def scrape_all_stock_data(
 def read_stock_data(
     stock
 ):
+    #print('Reading data for stock %s' % stock)
+    
     # flip dataframe horizontally to dates
     return pd.read_csv(
         filepath_or_buffer=(stock + '.txt'),
@@ -504,6 +512,52 @@ def read_stock_data(
         index_col=False
     )[::-1]
     
+def read_all_stock_data():
+    return {stock : read_stock_data(stock) for stock in stocks}
+    
+def compute_relative_volume(
+    stock_data,
+    moving_average_window
+):
+    return (
+        stock_data['VALUE_IN_MN']
+        /
+        stock_data['VALUE_IN_MN'].rolling(window=moving_average_window).mean()
+    )
+    
+def add_relative_volume(
+    stock,
+    stock_data,
+    all_stock_data,
+    moving_average_window
+):
+    all_stock_data[stock]['REL_VOL'] = compute_relative_volume(
+        stock_data=stock_data,
+        moving_average_window=moving_average_window
+    )
+    
+def add_all_relative_volumes(
+    all_stock_data,
+    moving_average_window
+):
+    for stock in stocks:
+        add_relative_volume(
+            stock=stock,
+            stock_data=all_stock_data[stock],
+            all_stock_data=all_stock_data,
+            moving_average_window=moving_average_window
+        )
+
+def simulate_market():
+    market_data = read_all_stock_data()
+    
+    add_all_relative_volumes(
+        all_stock_data=market_data,
+        moving_average_window=5
+    )
+    
+    return market_data
+
 def plot_relative_volume(
     stock
 ):
@@ -528,10 +582,13 @@ def plot_relative_volume(
     
     axs[1].set_xlabel('Days')
     axs[1].set_ylabel('Volume (BDT mn)')
-    
-    axs[2].plot(
-        ( stock_data['VALUE_IN_MN'].values[1:] / stock_data['VALUE_IN_MN'].values[:-1] )[30:]
+
+    relative_volume = compute_relative_volume(
+        stock_data=stock_data,
+        moving_average_window=5
     )
+    
+    axs[2].plot( relative_volume[30:] )
     
     axs[2].plot([0, 450], [2.5, 2.5], linewidth=0.5, color='k')
     
@@ -575,13 +632,49 @@ def plot_stock_data(
     
     plt.show()
     
+def plot_data(
+    x_data,
+    y_data
+):
+    fig, ax = plt.subplots()
+    
+    ax.plot(
+        x_data,
+        y_data
+    )
+    
+    plt.show()
+
+def backtest():
+    market_data = simulate_market()
+    
+    plot_data(
+        market_data['GP'].index[30:],
+        market_data['GP']['REL_VOL'].values[30:]
+    )
+    
+    dates = np.loadtxt(
+        fname='BATBC.txt',
+        skiprows=1,
+        usecols=0,
+        dtype='str'
+    )
+    
+    for day, date in enumerate(dates):
+        for stock in stocks:
+            stock_dates = market_data[stock]['DATE']
+            
+            if date not in stock_dates:
+                continue
+                
+            
+            
 def main():
     #test_list_of_stocks( start_driver() )
     #scrape_all_stock_data( start_driver() )
-    
     #plot_stock_data(stock='LHBL', name='NUM_TRADES')
-    
-    plot_relative_volume('ISLAMICFIN')
+    plot_relative_volume('GP')
+    backtest()
     
 if __name__ == '__main__':
     main()
