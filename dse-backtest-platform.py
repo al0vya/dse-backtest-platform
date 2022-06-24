@@ -524,39 +524,6 @@ def compute_relative_volume(
         /
         stock_data['VALUE_IN_MN'].rolling(window=moving_average_window).mean()
     )
-    
-def add_relative_volume(
-    stock,
-    stock_data,
-    all_stock_data,
-    moving_average_window
-):
-    all_stock_data[stock]['REL_VOL'] = compute_relative_volume(
-        stock_data=stock_data,
-        moving_average_window=moving_average_window
-    )
-    
-def add_all_relative_volumes(
-    all_stock_data,
-    moving_average_window
-):
-    for stock in stocks:
-        add_relative_volume(
-            stock=stock,
-            stock_data=all_stock_data[stock],
-            all_stock_data=all_stock_data,
-            moving_average_window=moving_average_window
-        )
-
-def simulate_market():
-    market_data = read_all_stock_data()
-    
-    add_all_relative_volumes(
-        all_stock_data=market_data,
-        moving_average_window=5
-    )
-    
-    return market_data
 
 def plot_relative_volume(
     stock
@@ -644,14 +611,42 @@ def plot_data(
     )
     
     plt.show()
+    
+def add_relative_volume(
+    stock,
+    stock_data,
+    all_stock_data,
+    moving_average_window
+):
+    all_stock_data[stock]['REL_VOL'] = compute_relative_volume(
+        stock_data=stock_data,
+        moving_average_window=moving_average_window
+    )
+    
+def add_all_relative_volumes(
+    all_stock_data,
+    moving_average_window
+):
+    for stock in stocks:
+        add_relative_volume(
+            stock=stock,
+            stock_data=all_stock_data[stock],
+            all_stock_data=all_stock_data,
+            moving_average_window=moving_average_window
+        )
+
+def simulate_market():
+    market_data = read_all_stock_data()
+    
+    add_all_relative_volumes(
+        all_stock_data=market_data,
+        moving_average_window=5
+    )
+    
+    return market_data
 
 def backtest():
     market_data = simulate_market()
-    
-    plot_data(
-        market_data['GP'].index[30:],
-        market_data['GP']['REL_VOL'].values[30:]
-    )
     
     dates = np.loadtxt(
         fname='BATBC.txt',
@@ -661,14 +656,15 @@ def backtest():
     )
     
     for day, date in enumerate(dates):
+        if day + 1 <= 5:
+            continue
+        
         for stock in stocks:
             stock_dates = market_data[stock]['DATE']
             
             if date not in stock_dates:
                 continue
                 
-            
-            
 def main():
     #test_list_of_stocks( start_driver() )
     #scrape_all_stock_data( start_driver() )
