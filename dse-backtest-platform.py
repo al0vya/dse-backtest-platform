@@ -1017,7 +1017,7 @@ class Position:
         self.buy_price_per_share      = open * (1 + entry_slippage)
         self.buy_price                = self.buy_price_per_share * self.num_shares
         self.entry_price              = self.buy_price * (1 + entry_commission)
-        self.stop_loss                = np.max( [ 0, self.buy_price_per_share - (4 * price_noise) ] )
+        self.stop_loss                = np.max( [ 0, self.buy_price_per_share - (price_noise_scale_factor * price_noise) ] )
         self.days_held                = 0
         
 class Book:
@@ -1051,7 +1051,11 @@ class Book:
     def write_PnL(
         self
     ):
-        pd.DataFrame.from_dict(self.PnL_data).to_csv('book_PnL.csv')
+        PnL_df = pd.DataFrame.from_dict(self.PnL_data)
+        
+        print( 'Total PnL:', PnL_df['Profit'].sum() )
+        
+        PnL_df.to_csv('book_PnL.csv')
         
     def increment_days_held(
         self,
@@ -1077,7 +1081,7 @@ class Book:
             return
         
         if stock in self.positions:
-            sys.exit('Exiting: tried to buy a stock that is already in the book')
+            sys.exit('Exiting: tried to buy a stock that is already in the book (%s)' % stock)
         
         position = Position(
             stock=stock,
@@ -1090,8 +1094,11 @@ class Book:
         )
         
         enough_capital = ( (self.available_capital - position.entry_price) > 0 )
+        enough_shares  = (position.num_shares > 0)
         
-        if enough_capital:
+        if enough_capital and enough_shares:
+            print('Opening position in stock %s' % stock)
+            
             self.available_capital -= position.entry_price
             
             self.positions[stock] = position
@@ -1156,9 +1163,9 @@ class Book:
             sys.exit('Exiting: tried to hold a stock that is not in the book')
         
         sf        = self.price_noise_scale_factor
-        days_held = self.positions[stock]
+        days_held = self.positions[stock].days_held
         
-        new_stop_loss = open - (sf * price_noise)
+        new_stop_loss = open - sf * price_noise
         
         new_stop_loss = np.max( [0, new_stop_loss] )
         
@@ -1182,6 +1189,101 @@ def compute_exit_signal(
         days_held > 2
     )
 
+def manage_position(
+    stock,
+    stock_data,
+    trading_date,
+    book
+):
+    current_traded_day = np.where(stock_data['DATE'].values == trading_date)[0][0]
+    yday_traded_day    = current_traded_day - 1
+    
+    # only consider stock if it's been traded for at least 5 days
+    if current_traded_day <= 4:
+        return
+    
+    open = stock_data['OPEN'][current_traded_day]
+    
+    should_exit = compute_exit_signal(
+        open=open,
+        stop_loss=book.positions[stock].stop_loss,
+        days_held=book.positions[stock].days_held
+    )
+    
+    if should_exit:
+        book.exit_position(
+            stock=stock,
+            open=open,
+            exit_commission=0.01,
+            exit_slippage=0.01
+        )
+    else:
+        yday_ATR = stock_data['ATR'][yday_traded_day]
+        
+        book.hold_position(
+            stock=stock,
+            open=open,
+            price_noise=yday_ATR
+        )
+
+def check_stock_for_entry(
+    stock,
+    stock_data,
+    trading_date,
+    entry_rel_vol,
+    candidate_stocks
+):
+    current_traded_day = np.where(stock_data['DATE'].values == trading_date)[0][0]
+    yday_traded_day    = current_traded_day - 1
+    
+    # only consider stock if it's been traded for at least 5 days
+    if current_traded_day <= 4:
+        return
+    
+    yday_rel_vol = stock_data['REL_VOL'][yday_traded_day]
+    
+    should_enter = compute_entry_signal(
+        rel_vol=yday_rel_vol,
+        entry_rel_vol=entry_rel_vol
+    )
+    
+    if should_enter:
+        candidate_stocks[stock] = yday_rel_vol
+        
+def open_new_positions(
+    market_data,
+    trading_date,
+    candidate_stocks,
+    book
+):
+    # sort candidate_stocks from lowest yday_rel_vol
+    # https://docs.python.org/3/howto/sorting.html#key-functions
+    candidate_stocks_sorted = {
+        stock : rel_vol
+        for stock, rel_vol in sorted( candidate_stocks.items(), key=lambda stock_rel_vol_tuple : stock_rel_vol_tuple[1] )
+    }
+    
+    for stock in candidate_stocks_sorted:
+        stock_data = market_data[stock]
+        
+        current_traded_day = np.where(stock_data['DATE'] == trading_date)[0][0]
+        yday_traded_day    = current_traded_day - 1
+        
+        open     = stock_data['OPEN'][current_traded_day]
+        yday_ATR = stock_data['ATR'][yday_traded_day]
+        
+        book.enter_position(
+            stock=stock,
+            open=open,
+            entry_commission=0.01,
+            entry_slippage=0.01,
+            price_noise=yday_ATR
+        )
+        
+        # enter at most one position per day
+        # exit after first iteration of loop
+        break
+
 def plot_relative_volume(
     stock_data
 ):
@@ -1200,101 +1302,55 @@ def backtest():
         dtype='str'
     )[::-1]
     
+    half_of_trading_dates = int(trading_dates.shape[0] / 2)
+    
     book = Book(
         starting_capital=10000,
         R_per_position=0.01,
-        price_noise_scale_factor=2.5
+        price_noise_scale_factor=4.0
     )
     
     entry_rel_vol = 2.5
     
-    stocks_to_buy_today = {}
-    
-    for day, trading_date in enumerate(trading_dates[:220]):
+    for day, trading_date in enumerate( trading_dates[:half_of_trading_dates] ):
+        print('Trading, day %s...' % trading_date)
+        
+        candidate_stocks = {}
+        
         if day <= 4:
             continue
         
         for stock in stocks_to_trade:
-            book.increment_days_held(stock)
-            
-            stock_data  = market_data[stock]
-            stock_dates = stock_data['DATE'].values
-            
-            # skip if stock wasn't traded on this date
-            if trading_date not in stock_dates:
-                continue
-            else:
-                current_traded_day = np.where(stock_dates == trading_date)[0][0]
-                yday_traded_day    = current_traded_day - 1
-                
-                # only consider stock if it's been traded for at least 5 days
-                if current_traded_day <= 4:
-                    break
-                
-                if stock in book.positions:
-                    open = stock_data['OPEN'][current_traded_day]
-                    
-                    should_exit = compute_exit_signal(
-                        open=open,
-                        stop_loss=book.positions[stock].stop_loss,
-                        days_held=book.positions[stock].days_held
-                    )
-                    
-                    if should_exit:
-                        book.exit_position(
-                            stock=stock,
-                            open=open,
-                            exit_commission=0.01,
-                            exit_slippage=0.01
-                        )
-                    else:
-                        yday_ATR = stock_data['ATR'][yday_traded_day]
-                        
-                        book.hold_position(
-                            stock=stock,
-                            open=open,
-                            price_noise=yday_ATR
-                        )
-                else: # stock not in book, so check for entry signal
-                    yday_rel_vol = stock_data['REL_VOL'][yday_traded_day]
-                    
-                    should_enter = compute_entry_signal(
-                        rel_vol=yday_rel_vol,
-                        entry_rel_vol=entry_rel_vol
-                    )
-                    
-                    if should_enter:
-                        stocks_to_buy_today[stock] = yday_rel_vol
-        
-        # sort stocks_to_buy_today from lowest yday_rel_vol
-        # https://docs.python.org/3/howto/sorting.html#key-functions
-        stocks_to_buy_today = {
-            stock : rel_vol
-            for stock, rel_vol in sorted( stocks_to_buy_today.items(), key=lambda stock_rel_vol_tuple : stock_rel_vol_tuple[1] )
-        }
-        
-        for stock in stocks_to_buy_today:
             stock_data = market_data[stock]
             
-            current_traded_day = np.where(stock_data['DATE'] == trading_date)[0][0]
-            yday_traded_day    = current_traded_day - 1
+            book.increment_days_held(stock)
             
-            open     = stock_data['OPEN'][current_traded_day]
-            yday_ATR = stock_data['ATR'][yday_traded_day]
-            
-            book.enter_position(
-                stock=stock,
-                open=open,
-                entry_commission=0.01,
-                entry_slippage=0.01,
-                price_noise=yday_ATR
-            )
-            
-            # enter at most one position per day
-            # exit after first iteration of loop
-            break
+            # skip if stock wasn't traded on this date
+            if trading_date not in stock_data['DATE'].values:
+                continue
+            else:
+                if stock in book.positions:
+                    manage_position(
+                        stock=stock,
+                        stock_data=stock_data,
+                        trading_date=trading_date,
+                        book=book
+                    )
+                else: # stock not in book, so check for entry signal for candidate_stocks to buy
+                    check_stock_for_entry(
+                        stock=stock,
+                        stock_data=stock_data,
+                        trading_date=trading_date,
+                        entry_rel_vol=entry_rel_vol,
+                        candidate_stocks=candidate_stocks
+                    )
         
-        stocks_to_buy_today = {}
+        open_new_positions(
+            market_data=market_data,
+            trading_date=trading_date,
+            candidate_stocks=candidate_stocks,
+            book=book
+        )
         
     book.write_PnL()
         
