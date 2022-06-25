@@ -413,6 +413,379 @@ stocks = [
     'ZEALBANGLA'
 ]
 
+stocks_to_trade = [
+    'AAMRANET',
+    'AAMRATECH',
+    'ABBANK',
+    'ACFL',
+    'ACI',
+    'ACIFORMULA',
+    'ACMELAB',
+    'ACMEPL',
+    'ACTIVEFINE',
+    'ADNTEL',
+    'ADVENT',
+    'AFCAGRO',
+    'AFTABAUTO',
+    'AGNISYSL',
+    'AGRANINS',
+    'AIL',
+    'AL-HAJTEX',
+    'ALARABANK',
+    'ALIF',
+    'ALLTEX',
+    'AMANFEED',
+    'AMBEEPHA',
+    'AMCL(PRAN)',
+    'ANLIMAYARN',
+    'ANWARGALV',
+    'AOL',
+    'APEXFOODS',
+    'APEXFOOT',
+    'APEXSPINN',
+    'APEXTANRY',
+    'APOLOISPAT',
+    'ARAMIT',
+    'ARAMITCEM',
+    'ARGONDENIM',
+    'ASIAINS',
+    'ASIAPACINS',
+    'ATCSLGF',
+    'ATLASBANG',
+    'AZIZPIPES',
+    'BANGAS',
+    'BANKASIA',
+    'BARKAPOWER',
+    'BATASHOE',
+    'BATBC',
+    'BAYLEASING',
+    'BBS',
+    'BBSCABLES',
+    'BDAUTOCA',
+    'BDCOM',
+    'BDFINANCE',
+    'BDLAMPS',
+    'BDSERVICE',
+    'BDTHAI',
+    'BDTHAIFOOD',
+    'BDWELDING',
+    'BEACHHATCH',
+    'BEACONPHAR',
+    'BENGALWTL',
+    'BERGERPBL',
+    'BEXGSUKUK',
+    'BEXIMCO',
+    'BGIC',
+    'BIFC',
+    'BNICL',
+    'BPML',
+    'BPPL',
+    'BRACBANK',
+    'BSC',
+    'BSCCL',
+    'BSRMLTD',
+    'BSRMSTEEL',
+    'BXPHARMA',
+    'BXSYNTH',
+    'CENTRALINS',
+    'CENTRALPHL',
+    'CITYBANK',
+    'CITYGENINS',
+    'CNATEX',
+    'CONFIDCEM',
+    'CONTININS',
+    'COPPERTECH',
+    'CROWNCEMNT',
+    'CRYSTALINS',
+    'CVOPRL',
+    'DACCADYE',
+    'DAFODILCOM',
+    'DBH',
+    'DEBARACEM',
+    'DEBBDLUGG',
+    'DEBBDWELD',
+    'DEBBDZIPP',
+    'DEBBXDENIM',
+    'DEBBXFISH',
+    'DEBBXKNI',
+    'DEBBXTEX',
+    'DELTALIFE',
+    'DELTASPINN',
+    'DESCO',
+    'DESHBANDHU',
+    'DGIC',
+    'DHAKABANK',
+    'DHAKAINS',
+    'DOMINAGE',
+    'DOREENPWR',
+    'DSHGARME',
+    'DSSL',
+    'DULAMIACOT',
+    'DUTCHBANGL',
+    'EASTERNINS',
+    'EASTLAND',
+    'EASTRNLUB',
+    'EBL',
+    'ECABLES',
+    'EGEN',
+    'EHL',
+    'EIL',
+    'EMERALDOIL',
+    'ENVOYTEX',
+    'EPGL',
+    'ESQUIRENIT',
+    'ETL',
+    'EXIMBANK',
+    'FAMILYTEX',
+    'FARCHEM',
+    'FAREASTFIN',
+    'FAREASTLIF',
+    'FASFIN',
+    'FBFIF',
+    'FEDERALINS',
+    'FEKDIL',
+    'FINEFOODS',
+    'FIRSTFIN',
+    'FIRSTSBANK',
+    'FORTUNE',
+    'FUWANGCER',
+    'FUWANGFOOD',
+    'GBBPOWER',
+    'GEMINISEA',
+    'GENEXIL',
+    'GENNEXT',
+    'GHAIL',
+    'GHCL',
+    'GLOBALINS',
+    'GOLDENSON',
+    'GP',
+    'GPHISPAT',
+    'GQBALLPEN',
+    'GRAMEENS2',
+    'GREENDELT',
+    'GSPFINANCE',
+    'HAKKANIPUL',
+    'HEIDELBCEM',
+    'HFL',
+    'HRTEX',
+    'HWAWELLTEX',
+    'IBNSINA',
+    'IBP',
+    'ICB',
+    'ICB3RDNRB',
+    'ICBAGRANI1',
+    'ICBAMCL2ND',
+    'ICBIBANK',
+    'ICBSONALI1',
+    'IDLC',
+    'IFADAUTOS',
+    'IFIC',
+    'ILFSL',
+    'IMAMBUTTON',
+    'INDEXAGRO',
+    'INTECH',
+    'INTRACO',
+    'IPDC',
+    'ISLAMIBANK',
+    'ISLAMICFIN',
+    'ISLAMIINS',
+    'ISNLTD',
+    'ITC',
+    'JAMUNABANK',
+    'JAMUNAOIL',
+    'JANATAINS',
+    'JHRML',
+    'JMISMDL',
+    'JUTESPINN',
+    'KARNAPHULI',
+    'KBPPWBIL',
+    'KDSALTD',
+    'KEYACOSMET',
+    'KOHINOOR',
+    'KPCL',
+    'KPPL',
+    'KTL',
+    'LANKABAFIN',
+    'LEGACYFOOT',
+    'LHBL',
+    'LIBRAINFU',
+    'LINDEBD',
+    'LOVELLO',
+    'LRBDL',
+    'MAKSONSPIN',
+    'MALEKSPIN',
+    'MARICO',
+    'MATINSPINN',
+    'MEGCONMILK',
+    'MEGHNACEM',
+    'MEGHNAINS',
+    'MEGHNALIFE',
+    'MEGHNAPET',
+    'MERCANBANK',
+    'MERCINS',
+    'METROSPIN',
+    'MHSML',
+    'MIDASFIN',
+    'MIRACLEIND',
+    'MIRAKHTER',
+    'MITHUNKNIT',
+    'MJLBD',
+    'MLDYEING',
+    'MONNOAGML',
+    'MONNOCERA',
+    'MONNOFABR',
+    'MONOSPOOL',
+    'MPETROLEUM',
+    'MTB',
+    'NAHEEACP',
+    'NATLIFEINS',
+    'NAVANACNG',
+    'NBL',
+    'NCCBANK',
+    'NEWLINE',
+    'NFML',
+    'NHFIL',
+    'NITOLINS',
+    'NORTHERN',
+    'NORTHRNINS',
+    'NPOLYMER',
+    'NRBCBANK',
+    'NTC',
+    'NTLTUBES',
+    'NURANI',
+    'OAL',
+    'OIMEX',
+    'OLYMPIC',
+    'ONEBANKLTD',
+    'ORIONINFU',
+    'ORIONPHARM',
+    'PADMALIFE',
+    'PADMAOIL',
+    'PAPERPROC',
+    'PARAMOUNT',
+    'PDL',
+    'PENINSULA',
+    'PEOPLESINS',
+    'PHARMAID',
+    'PHENIXINS',
+    'PHOENIXFIN',
+    'PIONEERINS',
+    'PLFSL',
+    'POPULARLIF',
+    'POWERGRID',
+    'PRAGATIINS',
+    'PRAGATILIF',
+    'PREMIERBAN',
+    'PREMIERCEM',
+    'PREMIERLEA',
+    'PRIME1ICBA',
+    'PRIMEBANK',
+    'PRIMEFIN',
+    'PRIMEINSUR',
+    'PRIMELIFE',
+    'PRIMETEX',
+    'PROGRESLIF',
+    'PROVATIINS',
+    'PTL',
+    'PUBALIBANK',
+    'PURABIGEN',
+    'QUASEMIND',
+    'QUEENSOUTH',
+    'RAHIMAFOOD',
+    'RAHIMTEXT',
+    'RAKCERAMIC',
+    'RANFOUNDRY',
+    'RDFOOD',
+    'RECKITTBEN',
+    'REGENTTEX',
+    'RELIANCE1',
+    'RELIANCINS',
+    'RENATA',
+    'RENWICKJA',
+    'REPUBLIC',
+    'RINGSHINE',
+    'RNSPIN',
+    'ROBI',
+    'RSRMSTEEL',
+    'RUNNERAUTO',
+    'RUPALIBANK',
+    'RUPALIINS',
+    'RUPALILIFE',
+    'SAFKOSPINN',
+    'SAIFPOWER',
+    'SAIHAMCOT',
+    'SAIHAMTEX',
+    'SALAMCRST',
+    'SALVOCHEM',
+    'SAMATALETH',
+    'SAMORITA',
+    'SANDHANINS',
+    'SAPORTL',
+    'SAVAREFR',
+    'SBACBANK',
+    'SEAPEARL',
+    'SEMLFBSLGF',
+    'SEMLIBBLSF',
+    'SHAHJABANK',
+    'SHASHADNIM',
+    'SHEPHERD',
+    'SHURWID',
+    'SHYAMPSUG',
+    'SIBL',
+    'SILCOPHL',
+    'SILVAPHL',
+    'SIMTEX',
+    'SINGERBD',
+    'SINOBANGLA',
+    'SKICL',
+    'SKTRIMS',
+    'SONALIANSH',
+    'SONALILIFE',
+    'SONALIPAPR',
+    'SONARBAINS',
+    'SONARGAON',
+    'SOUTHEASTB',
+    'SPCERAMICS',
+    'SPCL',
+    'SQUARETEXT',
+    'SQURPHARMA',
+    'SSSTEEL',
+    'STANCERAM',
+    'STANDARINS',
+    'STANDBANKL',
+    'STYLECRAFT',
+    'SUMITPOWER',
+    'SUNLIFEINS',
+    'TAKAFULINS',
+    'TALLUSPIN',
+    'TAMIJTEX',
+    'TITASGAS',
+    'TOSRIFA',
+    'TRUSTBANK',
+    'TUNGHAI',
+    'UCB',
+    'UNILEVERCL',
+    'UNIONBANK',
+    'UNIONCAP',
+    'UNIONINS',
+    'UNIQUEHRL',
+    'UNITEDFIN',
+    'UNITEDINS',
+    'UPGDCL',
+    'USMANIAGL',
+    'UTTARABANK',
+    'UTTARAFIN',
+    'VAMLRBBF',
+    'VFSTDL',
+    'WALTONHIL',
+    'WATACHEM',
+    'WMSHIPYARD',
+    'YPL',
+    'ZAHEENSPIN',
+    'ZAHINTEX',
+    'ZEALBANGLA'
+]
+
 def scrape_stock_data(
     driver,
     stock,
@@ -517,12 +890,16 @@ def read_stock_data(
 ):
     #print('Reading data for stock %s' % stock)
     
-    # flip dataframe horizontally to dates
-    return pd.read_csv(
+    # flip dataframe horizontally to fix dates
+    stock_data = pd.read_csv(
         filepath_or_buffer=(stock + '.txt'),
         delimiter=' ',
         index_col=False
     )[::-1]
+    
+    stock_data.index = stock_data.index.values[::-1]
+    
+    return stock_data
     
 def read_all_stock_data():
     return {stock : read_stock_data(stock) for stock in stocks}
@@ -623,7 +1000,6 @@ def simulate_market():
     
     return market_data
 
-'''
 class Position:
     def __init__(
         self,
@@ -632,30 +1008,58 @@ class Position:
         abs_R,
         entry_commission,
         entry_slippage,
-        price_noise
+        price_noise,
+        price_noise_scale_factor
     ):
-        self.stock               = stock
-        self.buy_price_per_share = open * (1 + entry_slippage)
-        self.num_shares          = abs_R / (4 * price_noise)
-        self.buy_price           = buy_price_per_share * num_shares
-        self.entry_price         = buy_price * (1 + entry_commission)
-        self.stop_loss           = buy_price_per_share - (4 * price_noise)
-        self.days_held           = 0
-        self.traded_days_held    = 0
+        self.stock                    = stock
+        self.abs_R                    = abs_R
+        self.num_shares               = int( abs_R / (price_noise_scale_factor * price_noise) )
+        self.buy_price_per_share      = open * (1 + entry_slippage)
+        self.buy_price                = self.buy_price_per_share * self.num_shares
+        self.entry_price              = self.buy_price * (1 + entry_commission)
+        self.stop_loss                = np.max( [ 0, self.buy_price_per_share - (4 * price_noise) ] )
+        self.days_held                = 0
         
 class Book:
     def __init__(
         self,
         starting_capital,
-        R_per_position
+        R_per_position,
+        price_noise_scale_factor
     ):
-        self.starting_capital   = starting_capital
-        self.current_capital    = starting_capital
-        self.R_per_position     = R_per_position
-        self.abs_R_per_position = starting_capital * R_per_position
+        self.available_capital        = starting_capital
+        self.invested_capital         = 0
+        self.R_per_position           = R_per_position
+        self.abs_R_per_position       = starting_capital * R_per_position
+        self.price_noise_scale_factor = price_noise_scale_factor
+        self.positions                = {}
+        self.positions_exited         = 0
+        self.PnL_data                 = {
+            'Stock'                : [],
+            'Days held'            : [],
+            'Number of shares'     : [],
+            'Buy price per share'  : [],
+            'Sell price per share' : [],
+            'Entry'                : [],
+            'Exit'                 : [],
+            'Profit'               : [],
+            'R'                    : [],
+            'Available capital'    : []
+        }
         
-        self.positions = {}
+    
+    def write_PnL(
+        self
+    ):
+        pd.DataFrame.from_dict(self.PnL_data).to_csv('book_PnL.csv')
         
+    def increment_days_held(
+        self,
+        stock
+    ):
+        if stock in self.positions:
+            self.positions[stock].days_held += 1
+    
     def enter_position(
         self,
         stock,
@@ -664,8 +1068,16 @@ class Book:
         entry_slippage,
         price_noise
     ):
+        if price_noise == 0:
+            #print('Price noise is zero, cannot compute a position')
+            return
+        
+        if open == 0:
+            #print('Open price is zero, hopefully because stock was not traded this day, not entering position')
+            return
+        
         if stock in self.positions:
-            sys.exit('Exiting: tried to buy a stock that's already in the book')
+            sys.exit('Exiting: tried to buy a stock that is already in the book')
         
         position = Position(
             stock=stock,
@@ -673,16 +1085,37 @@ class Book:
             abs_R=self.abs_R_per_position,
             entry_commission=entry_commission,
             entry_slippage=entry_slippage,
-            price_noise=price_noise
+            price_noise=price_noise,
+            price_noise_scale_factor=self.price_noise_scale_factor
         )
         
-        enough_capital = ( (self.current_capital - position.entry_price) > 0 )
+        enough_capital = ( (self.available_capital - position.entry_price) > 0 )
         
         if enough_capital:
-            self.current_capital -= position.entry_price
+            self.available_capital -= position.entry_price
             
             self.positions[stock] = position
             
+    def append_position_PnL(
+        self,
+        position,
+        sell_price_per_share,
+        exit_price
+    ):
+        profit   = exit_price - position.entry_price
+        profit_R = profit / position.abs_R
+        
+        self.PnL_data['Stock'].append(position.stock)
+        self.PnL_data['Days held'].append(position.days_held)
+        self.PnL_data['Number of shares'].append(position.num_shares)
+        self.PnL_data['Buy price per share'].append(position.buy_price_per_share)
+        self.PnL_data['Sell price per share'].append(sell_price_per_share)
+        self.PnL_data['Entry'].append(position.entry_price)
+        self.PnL_data['Exit'].append(exit_price)
+        self.PnL_data['Profit'].append(profit)
+        self.PnL_data['R'].append(profit_R)
+        self.PnL_data['Available capital'].append(self.available_capital)
+    
     def exit_position(
         self,
         stock,
@@ -691,13 +1124,25 @@ class Book:
         exit_slippage
     ):
         if stock not in self.positions:
-            sys.exit('Exiting: tried to sell a stock that's not in the book')
+            sys.exit('Exiting: tried to sell a stock that is not in the book')
+        
+        if open == 0:
+            #print('Open price is zero, hopefully because stock was not traded this day, not exiting position')
+            return
         
         sell_price_per_share = open * (1 - exit_slippage)
         sell_price           = sell_price_per_share * self.positions[stock].num_shares
         exit_price           = sell_price * (1 - exit_commission)
         
-        self.current_capital += exit_price
+        self.available_capital += exit_price
+        
+        self.positions_exited += 1
+        
+        self.append_position_PnL(
+            position=self.positions[stock],
+            sell_price_per_share=sell_price_per_share,
+            exit_price=exit_price
+        )
         
         del self.positions[stock]
         
@@ -708,90 +1153,151 @@ class Book:
         price_noise
     ):
         if stock not in self.positions:
-            sys.exit('Exiting: tried to hold a stock that's not in the book')
+            sys.exit('Exiting: tried to hold a stock that is not in the book')
         
-        new_stop_loss = open - (4 * price_noise)
+        sf        = self.price_noise_scale_factor
+        days_held = self.positions[stock]
+        
+        new_stop_loss = open - (sf * price_noise)
+        
+        new_stop_loss = np.max( [0, new_stop_loss] )
         
         if new_stop_loss > self.positions[stock].stop_loss:
             self.positions[stock].stop_loss = new_stop_loss
         
-'''
+def compute_entry_signal(
+    rel_vol,
+    entry_rel_vol
+):
+    return rel_vol >= entry_rel_vol
+    
+def compute_exit_signal(
+    open,
+    stop_loss,
+    days_held
+):
+    return (
+        open < stop_loss
+        and
+        days_held > 2
+    )
+
+def plot_relative_volume(
+    stock_data
+):
+    plot_data(
+        stock_data['REL_VOL'].index,
+        stock_data['REL_VOL'].values
+    )
 
 def backtest():
     market_data = simulate_market()
     
-    dates = np.loadtxt(
+    trading_dates = np.loadtxt(
         fname='BATBC.txt',
         skiprows=1,
         usecols=0,
         dtype='str'
+    )[::-1]
+    
+    book = Book(
+        starting_capital=10000,
+        R_per_position=0.01,
+        price_noise_scale_factor=2.5
     )
     
-    for day, date in enumerate(dates):
-        if day + 1 <= 5:
+    entry_rel_vol = 2.5
+    
+    stocks_to_buy_today = {}
+    
+    for day, trading_date in enumerate(trading_dates[:220]):
+        if day <= 4:
             continue
         
-        for stock in stocks:
-            stock_dates = market_data[stock]['DATE']
+        for stock in stocks_to_trade:
+            book.increment_days_held(stock)
             
-            '''
-            # increment real working days held no matter what
-            if stock in book.positions:
-                book.positions[stock].days_held += 1
-            '''
+            stock_data  = market_data[stock]
+            stock_dates = stock_data['DATE'].values
             
             # skip if stock wasn't traded on this date
-            if date not in stock_dates:
-                continue    
-            '''
+            if trading_date not in stock_dates:
+                continue
             else:
-                need:
-                open
-                yday_close
-                ATR_yday
-                yday_rel_vol
+                current_traded_day = np.where(stock_dates == trading_date)[0][0]
+                yday_traded_day    = current_traded_day - 1
+                
+                # only consider stock if it's been traded for at least 5 days
+                if current_traded_day <= 4:
+                    break
                 
                 if stock in book.positions:
-                    # increment number of traded days held because stock is traded on this date
-                    book.positions[stock].traded_days_held += 1
+                    open = stock_data['OPEN'][current_traded_day]
                     
-                    should_exit = (
-                        open < book.positions[stock].stop_loss
-                        and
-                        book.positions[stock].days_held > 2
+                    should_exit = compute_exit_signal(
+                        open=open,
+                        stop_loss=book.positions[stock].stop_loss,
+                        days_held=book.positions[stock].days_held
                     )
                     
                     if should_exit:
-                        exit_slippage = 0.05 if ( (np.abs(open - yday_close) / yday_close) > 0.1 ) else 0.01
-                        
                         book.exit_position(
                             stock=stock,
                             open=open,
                             exit_commission=0.01,
-                            exit_slippage=exit_slippage
+                            exit_slippage=0.01
                         )
                     else:
+                        yday_ATR = stock_data['ATR'][yday_traded_day]
+                        
                         book.hold_position(
                             stock=stock,
                             open=open,
-                            price_noise=ATR_yday
+                            price_noise=yday_ATR
                         )
                 else: # stock not in book, so check for entry signal
-                    if yday_rel_vol > 2.5:
-                        stocks_to_buy.append(stock)
-            '''
+                    yday_rel_vol = stock_data['REL_VOL'][yday_traded_day]
+                    
+                    should_enter = compute_entry_signal(
+                        rel_vol=yday_rel_vol,
+                        entry_rel_vol=entry_rel_vol
+                    )
+                    
+                    if should_enter:
+                        stocks_to_buy_today[stock] = yday_rel_vol
+        
+        # sort stocks_to_buy_today from lowest yday_rel_vol
+        # https://docs.python.org/3/howto/sorting.html#key-functions
+        stocks_to_buy_today = {
+            stock : rel_vol
+            for stock, rel_vol in sorted( stocks_to_buy_today.items(), key=lambda stock_rel_vol_tuple : stock_rel_vol_tuple[1] )
+        }
+        
+        for stock in stocks_to_buy_today:
+            stock_data = market_data[stock]
             
-        '''
-        for stock in stocks_to_buy:
+            current_traded_day = np.where(stock_data['DATE'] == trading_date)[0][0]
+            yday_traded_day    = current_traded_day - 1
+            
+            open     = stock_data['OPEN'][current_traded_day]
+            yday_ATR = stock_data['ATR'][yday_traded_day]
+            
             book.enter_position(
                 stock=stock,
                 open=open,
                 entry_commission=0.01,
                 entry_slippage=0.01,
-                price_noise=ATR_yday
+                price_noise=yday_ATR
             )
-        '''
             
+            # enter at most one position per day
+            # exit after first iteration of loop
+            break
+        
+        stocks_to_buy_today = {}
+        
+    book.write_PnL()
+        
 def main():
     backtest()
     
