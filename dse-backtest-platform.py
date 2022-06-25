@@ -1097,7 +1097,7 @@ class Book:
         enough_shares  = (position.num_shares > 0)
         
         if enough_capital and enough_shares:
-            print('Opening position in stock %s' % stock)
+            #print('Entering position in stock %s' % stock)
             
             self.available_capital -= position.entry_price
             
@@ -1137,6 +1137,8 @@ class Book:
             #print('Open price is zero, hopefully because stock was not traded this day, not exiting position')
             return
         
+        #print('Exiting position in stock %s' % stock)
+        
         sell_price_per_share = open * (1 - exit_slippage)
         sell_price           = sell_price_per_share * self.positions[stock].num_shares
         exit_price           = sell_price * (1 - exit_commission)
@@ -1162,6 +1164,8 @@ class Book:
         if stock not in self.positions:
             sys.exit('Exiting: tried to hold a stock that is not in the book')
         
+        #print('Holding position in stock %s' % stock)
+        
         sf        = self.price_noise_scale_factor
         days_held = self.positions[stock].days_held
         
@@ -1176,7 +1180,7 @@ def compute_entry_signal(
     rel_vol,
     entry_rel_vol
 ):
-    return rel_vol >= entry_rel_vol
+    return rel_vol <= entry_rel_vol
     
 def compute_exit_signal(
     open,
@@ -1260,7 +1264,7 @@ def open_new_positions(
     # https://docs.python.org/3/howto/sorting.html#key-functions
     candidate_stocks_sorted = {
         stock : rel_vol
-        for stock, rel_vol in sorted( candidate_stocks.items(), key=lambda stock_rel_vol_tuple : stock_rel_vol_tuple[1] )
+        for stock, rel_vol in sorted( candidate_stocks.items(), key=lambda stock_rel_vol_tuple : stock_rel_vol_tuple[1], reverse=True )
     }
     
     for stock in candidate_stocks_sorted:
@@ -1284,35 +1288,13 @@ def open_new_positions(
         # exit after first iteration of loop
         break
 
-def plot_relative_volume(
-    stock_data
+def trade(
+    market_data,
+    trading_dates,
+    book,
+    entry_rel_vol
 ):
-    plot_data(
-        stock_data['REL_VOL'].index,
-        stock_data['REL_VOL'].values
-    )
-
-def backtest():
-    market_data = simulate_market()
-    
-    trading_dates = np.loadtxt(
-        fname='BATBC.txt',
-        skiprows=1,
-        usecols=0,
-        dtype='str'
-    )[::-1]
-    
-    half_of_trading_dates = int(trading_dates.shape[0] / 2)
-    
-    book = Book(
-        starting_capital=10000,
-        R_per_position=0.01,
-        price_noise_scale_factor=4.0
-    )
-    
-    entry_rel_vol = 2.5
-    
-    for day, trading_date in enumerate( trading_dates[:half_of_trading_dates] ):
+    for day, trading_date in enumerate(trading_dates):
         print('Trading, day %s...' % trading_date)
         
         candidate_stocks = {}
@@ -1336,7 +1318,7 @@ def backtest():
                         trading_date=trading_date,
                         book=book
                     )
-                else: # stock not in book, so check for entry signal for candidate_stocks to buy
+                else:
                     check_stock_for_entry(
                         stock=stock,
                         stock_data=stock_data,
@@ -1351,6 +1333,41 @@ def backtest():
             candidate_stocks=candidate_stocks,
             book=book
         )
+    
+def plot_relative_volume(
+    stock_data
+):
+    plot_data(
+        stock_data['REL_VOL'].index,
+        stock_data['REL_VOL'].values
+    )
+
+def backtest():
+    market_data = simulate_market()
+    
+    trading_dates = np.loadtxt(
+        fname='BATBC.txt',
+        skiprows=1,
+        usecols=0,
+        dtype='str'
+    )[::-1]
+    
+    half_of_trading_dates = int(trading_dates.shape[0] / 2)
+    
+    book = Book(
+        starting_capital=10000,
+        R_per_position=0.01,
+        price_noise_scale_factor=1.0
+    )
+    
+    entry_rel_vol = 2.5
+    
+    trade(
+        market_data=market_data,
+        trading_dates=trading_dates[:half_of_trading_dates],
+        book=book,
+        entry_rel_vol=entry_rel_vol
+    )
         
     book.write_PnL()
         
