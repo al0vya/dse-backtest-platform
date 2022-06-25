@@ -212,7 +212,6 @@ stocks = [
     'JMISMDL',
     'JUTESPINN',
     'KARNAPHULI',
-    'KAY&QUE',
     'KBPPWBIL',
     'KDSALTD',
     'KEYACOSMET',
@@ -500,6 +499,19 @@ def scrape_all_stock_data(
             print('Failed to scrape data of stock %s' % stock)
             continue
 
+def plot_data(
+    x_data,
+    y_data
+):
+    fig, ax = plt.subplots()
+    
+    ax.plot(
+        x_data,
+        y_data
+    )
+    
+    plt.show()
+
 def read_stock_data(
     stock
 ):
@@ -524,93 +536,6 @@ def compute_relative_volume(
         /
         stock_data['VALUE_IN_MN'].rolling(window=moving_average_window).mean()
     )
-
-def plot_relative_volume(
-    stock
-):
-    stock_data = read_stock_data(stock)
-    
-    fig = plt.figure()
-    
-    gridspec = fig.add_gridspec(nrows=3, ncols=1)
-    
-    axs = gridspec.subplots()
-    
-    axs[0].plot(
-        stock_data['CLOSE'].values[30:]
-    )
-    
-    axs[0].set_xlabel('Days')
-    axs[0].set_ylabel('BDT')
-    
-    axs[1].plot(
-        stock_data['VALUE_IN_MN'].values[30:]
-    )
-    
-    axs[1].set_xlabel('Days')
-    axs[1].set_ylabel('Volume (BDT mn)')
-
-    relative_volume = compute_relative_volume(
-        stock_data=stock_data,
-        moving_average_window=5
-    )
-    
-    axs[2].plot( relative_volume[30:] )
-    
-    axs[2].plot([0, 450], [2.5, 2.5], linewidth=0.5, color='k')
-    
-    axs[2].set_xlabel('Days')
-    axs[2].set_ylabel('Relative volume')
-    
-    plt.show()
-    
-def plot_stock_data(
-    stock,
-    name
-):
-    stock_data = read_stock_data(stock)
-    
-    fig, ax = plt.subplots()
-    
-    ax.plot(
-        stock_data[name].values
-    )
-    
-    is_price_data = (
-           name == 'LAST_TRADE_PRICE'
-        or name == 'HIGH' 
-        or name == 'LOW'
-        or name == 'OPEN'
-        or name == 'CLOSE'
-        or name == 'YDAY_CLOSE'
-    )
-    
-    if   is_price_data:
-        ylabel = 'BDT'
-    elif name == 'NUM_TRADES':
-        ylabel = 'Number of trades'
-    elif name == 'VALUE_IN_MN':
-        ylabel = 'BDT (mn)'
-    elif name == 'NUM_SHARES':
-        ylabel = 'Number of shares'
-    
-    ax.set_xlabel('Days')
-    ax.set_ylabel(ylabel)
-    
-    plt.show()
-    
-def plot_data(
-    x_data,
-    y_data
-):
-    fig, ax = plt.subplots()
-    
-    ax.plot(
-        x_data,
-        y_data
-    )
-    
-    plt.show()
     
 def add_relative_volume(
     stock,
@@ -635,6 +560,54 @@ def add_all_relative_volumes(
             moving_average_window=moving_average_window
         )
 
+def compute_average_true_range(
+    stock_data,
+    moving_average_window
+):
+    high = stock_data['HIGH'].values
+    low  = stock_data['LOW'].values
+    ycp  = stock_data['YDAY_CLOSE'].values
+    
+    diff_high_low = np.abs(high - low)
+    
+    diff_ycp_high = np.array( [0, *np.abs( high[1:] - ycp[:-1] ) ] )
+    diff_ycp_low  = np.array( [0, *np.abs( low[1:]  - ycp[:-1] ) ] )
+    
+    true_range = pd.Series(
+        np.maximum.reduce(
+            [
+                diff_high_low,
+                diff_ycp_high,
+                diff_ycp_low
+            ]
+        )
+    )
+    
+    return true_range.rolling(window=moving_average_window).mean()
+    
+def add_average_true_range(
+    stock,
+    stock_data,
+    all_stock_data,
+    moving_average_window
+):
+    all_stock_data[stock]['ATR'] = compute_average_true_range(
+        stock_data=stock_data,
+        moving_average_window=moving_average_window
+    )
+    
+def add_all_average_true_ranges(
+    all_stock_data,
+    moving_average_window
+):
+    for stock in stocks:
+        add_average_true_range(
+            stock=stock,
+            stock_data=all_stock_data[stock],
+            all_stock_data=all_stock_data,
+            moving_average_window=moving_average_window
+        )
+
 def simulate_market():
     market_data = read_all_stock_data()
     
@@ -643,7 +616,106 @@ def simulate_market():
         moving_average_window=5
     )
     
+    add_all_average_true_ranges(
+        all_stock_data=market_data,
+        moving_average_window=5
+    )
+    
     return market_data
+
+'''
+class Position:
+    def __init__(
+        self,
+        stock,
+        open,
+        abs_R,
+        entry_commission,
+        entry_slippage,
+        price_noise
+    ):
+        self.stock               = stock
+        self.buy_price_per_share = open * (1 + entry_slippage)
+        self.num_shares          = abs_R / (4 * price_noise)
+        self.buy_price           = buy_price_per_share * num_shares
+        self.entry_price         = buy_price * (1 + entry_commission)
+        self.stop_loss           = buy_price_per_share - (4 * price_noise)
+        self.days_held           = 0
+        self.traded_days_held    = 0
+        
+class Book:
+    def __init__(
+        self,
+        starting_capital,
+        R_per_position
+    ):
+        self.starting_capital   = starting_capital
+        self.current_capital    = starting_capital
+        self.R_per_position     = R_per_position
+        self.abs_R_per_position = starting_capital * R_per_position
+        
+        self.positions = {}
+        
+    def enter_position(
+        self,
+        stock,
+        open,
+        entry_commission,
+        entry_slippage,
+        price_noise
+    ):
+        if stock in self.positions:
+            sys.exit('Exiting: tried to buy a stock that's already in the book')
+        
+        position = Position(
+            stock=stock,
+            open=open,
+            abs_R=self.abs_R_per_position,
+            entry_commission=entry_commission,
+            entry_slippage=entry_slippage,
+            price_noise=price_noise
+        )
+        
+        enough_capital = ( (self.current_capital - position.entry_price) > 0 )
+        
+        if enough_capital:
+            self.current_capital -= position.entry_price
+            
+            self.positions[stock] = position
+            
+    def exit_position(
+        self,
+        stock,
+        open,
+        exit_commission,
+        exit_slippage
+    ):
+        if stock not in self.positions:
+            sys.exit('Exiting: tried to sell a stock that's not in the book')
+        
+        sell_price_per_share = open * (1 - exit_slippage)
+        sell_price           = sell_price_per_share * self.positions[stock].num_shares
+        exit_price           = sell_price * (1 - exit_commission)
+        
+        self.current_capital += exit_price
+        
+        del self.positions[stock]
+        
+    def hold_position(
+        self,
+        stock,
+        open,
+        price_noise
+    ):
+        if stock not in self.positions:
+            sys.exit('Exiting: tried to hold a stock that's not in the book')
+        
+        new_stop_loss = open - (4 * price_noise)
+        
+        if new_stop_loss > self.positions[stock].stop_loss:
+            self.positions[stock].stop_loss = new_stop_loss
+        
+'''
 
 def backtest():
     market_data = simulate_market()
@@ -662,14 +734,65 @@ def backtest():
         for stock in stocks:
             stock_dates = market_data[stock]['DATE']
             
+            '''
+            # increment real working days held no matter what
+            if stock in book.positions:
+                book.positions[stock].days_held += 1
+            '''
+            
+            # skip if stock wasn't traded on this date
             if date not in stock_dates:
-                continue
+                continue    
+            '''
+            else:
+                need:
+                open
+                yday_close
+                ATR_yday
+                yday_rel_vol
                 
+                if stock in book.positions:
+                    # increment number of traded days held because stock is traded on this date
+                    book.positions[stock].traded_days_held += 1
+                    
+                    should_exit = (
+                        open < book.positions[stock].stop_loss
+                        and
+                        book.positions[stock].days_held > 2
+                    )
+                    
+                    if should_exit:
+                        exit_slippage = 0.05 if ( (np.abs(open - yday_close) / yday_close) > 0.1 ) else 0.01
+                        
+                        book.exit_position(
+                            stock=stock,
+                            open=open,
+                            exit_commission=0.01,
+                            exit_slippage=exit_slippage
+                        )
+                    else:
+                        book.hold_position(
+                            stock=stock,
+                            open=open,
+                            price_noise=ATR_yday
+                        )
+                else: # stock not in book, so check for entry signal
+                    if yday_rel_vol > 2.5:
+                        stocks_to_buy.append(stock)
+            '''
+            
+        '''
+        for stock in stocks_to_buy:
+            book.enter_position(
+                stock=stock,
+                open=open,
+                entry_commission=0.01,
+                entry_slippage=0.01,
+                price_noise=ATR_yday
+            )
+        '''
+            
 def main():
-    #test_list_of_stocks( start_driver() )
-    #scrape_all_stock_data( start_driver() )
-    #plot_stock_data(stock='LHBL', name='NUM_TRADES')
-    plot_relative_volume('GP')
     backtest()
     
 if __name__ == '__main__':
