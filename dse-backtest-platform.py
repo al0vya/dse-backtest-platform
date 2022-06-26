@@ -465,7 +465,6 @@ stocks_to_trade = [
     'BDCOM',
     'BDFINANCE',
     'BDLAMPS',
-    'BDSERVICE',
     'BDTHAI',
     'BDTHAIFOOD',
     'BDWELDING',
@@ -501,14 +500,6 @@ stocks_to_trade = [
     'DACCADYE',
     'DAFODILCOM',
     'DBH',
-    'DEBARACEM',
-    'DEBBDLUGG',
-    'DEBBDWELD',
-    'DEBBDZIPP',
-    'DEBBXDENIM',
-    'DEBBXFISH',
-    'DEBBXKNI',
-    'DEBBXTEX',
     'DELTALIFE',
     'DELTASPINN',
     'DESCO',
@@ -670,7 +661,6 @@ stocks_to_trade = [
     'PHENIXINS',
     'PHOENIXFIN',
     'PIONEERINS',
-    'PLFSL',
     'POPULARLIF',
     'POWERGRID',
     'PRAGATIINS',
@@ -897,12 +887,15 @@ def read_stock_data(
         index_col=False
     )[::-1]
     
-    stock_data.index = stock_data.index.values[::-1]
+    # removing rows with zero volume, assuming stock not traded that day
+    stock_data = stock_data.iloc[ np.where(stock_data['NUM_SHARES'] != 0)[0] ]
+    
+    stock_data.reset_index(inplace=True)
     
     return stock_data
     
 def read_all_stock_data():
-    return {stock : read_stock_data(stock) for stock in stocks}
+    return {stock : read_stock_data(stock) for stock in stocks_to_trade}
     
 def compute_relative_volume(
     stock_data,
@@ -929,7 +922,7 @@ def add_all_relative_volumes(
     all_stock_data,
     moving_average_window
 ):
-    for stock in stocks:
+    for stock in stocks_to_trade:
         add_relative_volume(
             stock=stock,
             stock_data=all_stock_data[stock],
@@ -977,7 +970,7 @@ def add_all_average_true_ranges(
     all_stock_data,
     moving_average_window
 ):
-    for stock in stocks:
+    for stock in stocks_to_trade:
         add_average_true_range(
             stock=stock,
             stock_data=all_stock_data[stock],
@@ -1019,6 +1012,7 @@ class Position:
         self.entry_price              = self.buy_price * (1 + entry_commission)
         self.stop_loss                = np.max( [ 0, self.buy_price_per_share - (price_noise_scale_factor * price_noise) ] )
         self.days_held                = 0
+        
         
 class Book:
     def __init__(
@@ -1073,11 +1067,11 @@ class Book:
         price_noise
     ):
         if price_noise == 0:
-            #print('Price noise is zero, cannot compute a position')
+            print('Price noise is zero, cannot compute a position')
             return
         
         if open == 0:
-            #print('Open price is zero, hopefully because stock was not traded this day, not entering position')
+            print('Open price is zero, hopefully because stock was not traded this day, not entering position')
             return
         
         if stock in self.positions:
@@ -1134,7 +1128,7 @@ class Book:
             sys.exit('Exiting: tried to sell a stock that is not in the book')
         
         if open == 0:
-            #print('Open price is zero, hopefully because stock was not traded this day, not exiting position')
+            print('Open price is zero, hopefully because stock was not traded this day, not exiting position')
             return
         
         #print('Exiting position in stock %s' % stock)
@@ -1206,7 +1200,7 @@ def manage_position(
     if current_traded_day <= 4:
         return
     
-    open = stock_data['OPEN'][current_traded_day]
+    open = stock_data['OPEN'].iloc[current_traded_day]
     
     should_exit = compute_exit_signal(
         open=open,
@@ -1222,7 +1216,7 @@ def manage_position(
             exit_slippage=0.01
         )
     else:
-        yday_ATR = stock_data['ATR'][yday_traded_day]
+        yday_ATR = stock_data['ATR'].iloc[yday_traded_day]
         
         book.hold_position(
             stock=stock,
@@ -1244,7 +1238,7 @@ def check_stock_for_entry(
     if current_traded_day <= 4:
         return
     
-    yday_rel_vol = stock_data['REL_VOL'][yday_traded_day]
+    yday_rel_vol = stock_data['REL_VOL'].iloc[yday_traded_day]
     
     should_enter = compute_entry_signal(
         rel_vol=yday_rel_vol,
@@ -1273,8 +1267,8 @@ def open_new_positions(
         current_traded_day = np.where(stock_data['DATE'] == trading_date)[0][0]
         yday_traded_day    = current_traded_day - 1
         
-        open     = stock_data['OPEN'][current_traded_day]
-        yday_ATR = stock_data['ATR'][yday_traded_day]
+        open     = stock_data['OPEN'].iloc[current_traded_day]
+        yday_ATR = stock_data['ATR'].iloc[yday_traded_day]
         
         book.enter_position(
             stock=stock,
@@ -1357,18 +1351,16 @@ def backtest():
     book = Book(
         starting_capital=10000,
         R_per_position=0.01,
-        price_noise_scale_factor=1.0
+        price_noise_scale_factor=3.0
     )
-    
-    entry_rel_vol = 2.5
     
     trade(
         market_data=market_data,
         trading_dates=trading_dates[:half_of_trading_dates],
         book=book,
-        entry_rel_vol=entry_rel_vol
+        entry_rel_vol=0.5
     )
-        
+    
     book.write_PnL()
         
 def main():
