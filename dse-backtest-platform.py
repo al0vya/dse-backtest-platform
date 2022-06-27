@@ -1006,7 +1006,7 @@ class Position:
     ):
         self.stock                    = stock
         self.abs_R                    = abs_R
-        self.num_shares               = int( abs_R / (price_noise_scale_factor * price_noise) )
+        self.num_shares               = int( abs_R / (2 * price_noise_scale_factor * price_noise) )
         self.buy_price_per_share      = open * (1 + entry_slippage)
         self.buy_price                = self.buy_price_per_share * self.num_shares
         self.entry_price              = self.buy_price * (1 + entry_commission)
@@ -1017,10 +1017,12 @@ class Position:
 class Book:
     def __init__(
         self,
+        name,
         starting_capital,
         R_per_position,
         price_noise_scale_factor
     ):
+        self.name                     = name
         self.available_capital        = starting_capital
         self.invested_capital         = 0
         self.R_per_position           = R_per_position
@@ -1047,9 +1049,9 @@ class Book:
     ):
         PnL_df = pd.DataFrame.from_dict(self.PnL_data)
         
-        print( 'Total PnL:', PnL_df['Profit'].sum() )
+        print( ('Total PnL of book %s: ' % self.name) + str( PnL_df['Profit'].sum() ) )
         
-        PnL_df.to_csv('book_PnL.csv')
+        PnL_df.to_csv('book-%s-PnL.csv' % self.name)
         
     def increment_days_held(
         self,
@@ -1348,21 +1350,38 @@ def backtest():
     
     half_of_trading_dates = int(trading_dates.shape[0] / 2)
     
-    book = Book(
+    book_train = Book(
+        name='train',
         starting_capital=10000,
         R_per_position=0.01,
-        price_noise_scale_factor=3.0
+        price_noise_scale_factor=1.0
+    )
+    
+    book_test = Book(
+        name='test',
+        starting_capital=10000,
+        R_per_position=0.01,
+        price_noise_scale_factor=1.0
     )
     
     trade(
         market_data=market_data,
         trading_dates=trading_dates[:half_of_trading_dates],
-        book=book,
+        book=book_train,
         entry_rel_vol=0.5
     )
     
-    book.write_PnL()
-        
+    book_train.write_PnL()
+    
+    trade(
+        market_data=market_data,
+        trading_dates=trading_dates[half_of_trading_dates:],
+        book=book_test,
+        entry_rel_vol=0.5
+    )
+    
+    book_test.write_PnL()
+    
 def main():
     backtest()
     
