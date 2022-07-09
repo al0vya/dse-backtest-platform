@@ -1054,10 +1054,9 @@ class Book:
         PnL_df.to_csv('book-%s-PnL.csv' % self.name)
         
     def increment_days_held(
-        self,
-        stock
+        self
     ):
-        if stock in self.positions:
+        for stock in self.positions:
             self.positions[stock].days_held += 1
     
     def enter_position(
@@ -1293,6 +1292,8 @@ def trade(
     for day, trading_date in enumerate(trading_dates):
         print('Trading, day %s...' % trading_date)
         
+        book.increment_days_held()
+        
         candidate_stocks = {}
         
         if day <= 4:
@@ -1300,8 +1301,6 @@ def trade(
         
         for stock in stocks_to_trade:
             stock_data = market_data[stock]
-            
-            book.increment_days_held(stock)
             
             # skip if stock wasn't traded on this date
             if trading_date not in stock_data['DATE'].values:
@@ -1371,8 +1370,6 @@ def backtest():
         entry_rel_vol=0.5
     )
     
-    book_train.write_PnL()
-    
     trade(
         market_data=market_data,
         trading_dates=trading_dates[half_of_trading_dates:],
@@ -1380,6 +1377,7 @@ def backtest():
         entry_rel_vol=0.5
     )
     
+    book_train.write_PnL()
     book_test.write_PnL()
     
 def main():
