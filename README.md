@@ -1,2 +1,3 @@
-# webscraperDSE
-Webscraper to collect data from the Dhaka Stock Exchange
+# DSE backtest platform
+
+Platform to backtest quantitative trading strategies applied to the Dhaka Stock Exchange.
